@@ -1,0 +1,8 @@
+inherit_gem:
+  gc_ruboconfig: rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 2.5
+
+RSpec/NestedGroups:
+  Max: 5

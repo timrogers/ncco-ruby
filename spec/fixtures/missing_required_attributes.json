@@ -1,0 +1,12 @@
+[
+  {
+    "action": "talk"
+  },
+  {
+    "action": "record",
+    "endOnKey": "*",
+    "beepStart": true,
+    "eventUrl": "https://acmewidgets.com/nexmo/recordings",
+    "eventMethod": "POST"
+  }
+]

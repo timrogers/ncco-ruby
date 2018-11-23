@@ -1,0 +1,13 @@
+[
+  {
+    "action": "talk",
+    "text": "Hello there! You're through to Acme Widgets. Leave a message after the tone. Press star or hang up when you're done."
+  },
+  {
+    "action": "record",
+    "endOnKey": "*",
+    "beepStart": true,
+    "eventUrl": "https://acmewidgets.com/nexmo/recordings",
+    "eventMethod": "POST"
+  }
+]
