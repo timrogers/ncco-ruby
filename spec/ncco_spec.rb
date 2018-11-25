@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-require "active_support/core_ext/hash"
-
 RSpec.describe NCCO do
-  it "has a version number" do
-    expect(NCCO::VERSION).to_not be nil
-  end
-
   describe ".build" do
     subject(:build) { described_class.build(input) }
 
@@ -16,7 +10,11 @@ RSpec.describe NCCO do
       it { is_expected.to eq(input) }
 
       describe "with symbol keys" do
-        let(:input) { load_json_fixture("valid_ncco.json").map(&:deep_symbolize_keys) }
+        let(:input) do
+          load_json_fixture("valid_ncco.json").map do |action|
+            deep_transform_keys(action, &:to_sym)
+          end
+        end
 
         it { is_expected.to eq(input) }
       end
@@ -71,5 +69,9 @@ RSpec.describe NCCO do
         end
       end
     end
+  end
+
+  it "has a version number" do
+    expect(NCCO::VERSION).to_not be nil
   end
 end

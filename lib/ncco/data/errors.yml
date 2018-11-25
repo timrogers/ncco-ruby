@@ -3,8 +3,8 @@ en:
     strict_keys?: has attributes which aren't part of the NCCO specification
     http_or_https_url?: must be a valid HTTP or HTTPS URL
     supported_http_method?: must be a supported HTTP method
-    single_digit?: must be a single digit from a phone keypad, as a string
-    digits?: must be a series of one or more digits from a phone keypad, as a string
+    phone_keypad_digit?: must be a single digit from a phone keypad, as a string
+    phone_keypad_digits?: must be a series of one or more digits from a phone keypad, as a string
     e164?: must be a valid E.164-formatted phone number
     websocket_url?: must be a valid Websocket URL
     hash_with_string_keys_and_values?: must be a hash with String keys and values

@@ -2,6 +2,10 @@
 
 require "rspec/expectations"
 
+# We keep the specs for our schemas very declarative and clear by specifying values
+# which should and should not be accepted by the schema. This `allow_value` matcher
+# makes that easy and simple, without having to understand what's going on under the
+# hood.
 RSpec::Matchers.define :allow_value do |value|
   attr_reader :attribute_name, :error_messages
 

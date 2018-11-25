@@ -4,6 +4,7 @@ module NCCO
   module Predicates
     include ::Dry::Logic::Predicates
 
+    # TODO: Does Nexmo accept URLs relative to the current location?
     predicate(:http_or_https_url?) do |value|
       uri = URI.parse(value)
       %w[http https].include?(uri.scheme)
@@ -25,16 +26,17 @@ module NCCO
     end
 
     NUMBERS = (0..9).map(&:to_s).freeze
-    DIGITS = [*NUMBERS, "*", "#"].freeze
+    PHONE_KEYPAD_DIGITS = [*NUMBERS, "*", "#"].freeze
 
-    predicate(:single_digit?) do |value|
-      DIGITS.include?(value)
+    predicate(:phone_keypad_digit?) do |value|
+      PHONE_KEYPAD_DIGITS.include?(value)
     end
 
-    predicate(:digits?) do |value|
+    predicate(:phone_keypad_digits?) do |value|
       value.is_a?(String) &&
         !value.empty? &&
-        (value.chars - DIGITS).none?
+        # There shouldn't be any characters in the input that aren't keypad digits
+        (value.chars - PHONE_KEYPAD_DIGITS).none?
     end
 
     predicate(:e164?) do |value|

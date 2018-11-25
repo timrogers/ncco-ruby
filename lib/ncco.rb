@@ -14,6 +14,8 @@ require "ncco/schemas/talk"
 module NCCO
   class InvalidActionError < StandardError; end
 
+  # Maps the "action" attribute within an action to the schema which should be used
+  # to validate it
   SCHEMAS_BY_TYPE = {
     "connect" => Schemas::Connect,
     "conversation" => Schemas::Conversation,
@@ -62,7 +64,8 @@ module NCCO
                             index: index)
       end
 
-      error_messages = transform_error_messages(schema.call(action).messages(full: true))
+      result = schema.call(action)
+      error_messages = get_error_messages(result)
 
       raise_invalid_error(error_messages.join(", "), index: index) if error_messages.any?
     end
@@ -105,14 +108,16 @@ module NCCO
       end
     end
 
-    # Transforms error messages returned by dry-validations into a consistent format. For
+    # Gets the error messages from `Dry::Validation::Result`s in a consistent format. For
     # field-level errors, we get back a `Hash` mapping the attribute name to an array of
     # `String` error messages, whereas for unrecognised attributes (which is a bit of a
     # hack), we just get back an array. This handles either gracefully.
     #
-    # @param error_messages [Array<String>, Hash] messages returned by dry-validations
+    # @param result [Dry::Valiation::Result] the result from validating an action against
+    #   a schema
     # @return [Array<String>] a list of error messages which is guaranteed to be an array
-    def transform_error_messages(error_messages)
+    def get_error_messages(result)
+      error_messages = result.messages(full: true)
       return error_messages if error_messages.is_a?(Array)
 
       error_messages.values.flatten

@@ -25,3 +25,16 @@ end
 def load_json_fixture(*path)
   JSON.parse(load_fixture(*path))
 end
+
+# Used to "symbolise" Hash keys in our tests are loading from JSON. Taken from Rails
+# (<https://apidock.com/rails/v4.0.2/Hash/deep_transform_keys>), with a refactor to
+# make it "functional" rather than monkeypatching Hash
+def deep_transform_keys(hash, &block)
+  result = {}
+
+  hash.each do |key, value|
+    result[yield(key)] = value.is_a?(Hash) ? deep_transform_keys(value, &block) : value
+  end
+
+  result
+end

@@ -2,10 +2,15 @@
 
 require "rspec/expectations"
 
-# Dry::Validation schemas separate key and value validation. So for example, you
-# can independently say that this key *must* be specified, but I don't care what
-# the value is (it could even be `nil`!). This handy matcher checks that the key
-# is required. Validation of any value provided with `allow_value` is separate.
+# dry-validations schemas separate key and value validation. So for example:
+#
+# * You can say that this key *must* be specified, but I don't care what the
+#   value is (it could even be `nil`!).
+# * Equally, you can see that I don't care whether this key is specified, but
+#   if it is, the value must look like this.
+#
+# This handy matcher checks that a key is required, without setting any
+# conditions about the value.
 RSpec::Matchers.define :require_attribute do |attribute_name|
   match do |schema|
     error_messages = schema.call({}).

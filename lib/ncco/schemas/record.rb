@@ -11,7 +11,7 @@ module NCCO
       optional(:split).value(included_in?: [nil, "conversation"])
       optional(:channels).value(type?: Integer, gteq?: 1, lteq?: 32)
       optional(:endOnSilence).value(type?: Integer, gteq?: 3, lteq?: 10)
-      optional(:endOnKey).value(:single_digit?)
+      optional(:endOnKey).value(:phone_keypad_digit?)
       optional(:beepStart).value(:bool?)
       optional(:timeout).value(type?: Integer, gteq?: 3, lteq?: 7200)
       optional(:eventUrl).value(:http_or_https_url?)

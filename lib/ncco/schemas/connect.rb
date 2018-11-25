@@ -9,9 +9,9 @@ module NCCO
       # Phone endpoint attributes
       optional(:number).value(:e164?)
       optional(:onAnswer).value(:http_or_https_url?)
-      optional(:dtmfAnswer).value(:digits?)
+      optional(:dtmfAnswer).value(:phone_keypad_digits?)
 
-      # Websocket endpoint attributes
+      # WebSocket endpoint attributes
       optional(:uri).value(:websocket_url?) # Also used for SIP endpoints
       optional("content-type").value(eql?: "audio/l16;rate=16000")
       optional(:headers).value(:hash_with_string_keys_and_values?)

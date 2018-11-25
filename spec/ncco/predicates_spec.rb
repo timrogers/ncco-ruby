@@ -151,8 +151,8 @@ RSpec.describe NCCO::Predicates do
     end
   end
 
-  describe "single_digit?" do
-    let(:predicate) { :single_digit? }
+  describe "phone_keypad_digit?" do
+    let(:predicate) { :phone_keypad_digit? }
 
     context "with a number from a phone as a string" do
       let(:input) { "1" }
@@ -203,8 +203,8 @@ RSpec.describe NCCO::Predicates do
     end
   end
 
-  describe "digits?" do
-    let(:predicate) { :digits? }
+  describe "phone_keypad_digits?" do
+    let(:predicate) { :phone_keypad_digits? }
 
     context "with a series of numbers from a phone as a string" do
       let(:input) { "123567890" }
