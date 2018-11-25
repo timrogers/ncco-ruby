@@ -7,6 +7,7 @@ jobs:
       - image: circleci/ruby:2.5.1
     steps:
       - checkout
+      - run: gem install bundler --pre
       - type: cache-restore
         name: Restore Bundler cache
         key: ncco-{{ checksum "Gemfile.lock" }}
