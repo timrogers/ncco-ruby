@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe NCCO::Schemas::Connect do
+  subject(:schema) { described_class }
+
   describe "action" do
     it { is_expected.to require_attribute(:action) }
     it { is_expected.to allow_value("connect").for(:action) }
@@ -82,55 +84,284 @@ RSpec.describe NCCO::Schemas::Connect do
       end
 
       describe "number" do
-        it { is_expected.to_not require_attribute(:number) }
-        it { is_expected.to allow_value("+442071838674").for(:number) }
-        it { is_expected.to allow_value("+14155552671").for(:number) }
-        it { is_expected.to_not allow_value("02071838674").for(:number) }
-        it { is_expected.to_not allow_value("something else").for(:number) }
-        it { is_expected.to_not allow_blank_values.for(:number) }
+        context "when the endpoint type is set to phone" do
+          specify do
+            expect(schema).to require_attribute(:number).with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to allow_value("+442071838674").for(:number).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to allow_value("+14155552671").for(:number).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("02071838674").for(:number).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("something else").for(:number).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.for(:number).
+              with_attributes(type: "phone")
+          end
+        end
+
+        context "when the endpoint type is set to something else" do
+          specify do
+            expect(schema).to_not allow_attribute(:number).with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_attribute(:number).
+              with_attributes(type: "websocket")
+          end
+        end
       end
 
       describe "onAnswer" do
-        it { is_expected.to_not require_attribute(:onAnswer) }
-        it { is_expected.to allow_value("http://foo.bar").for(:onAnswer) }
-        it { is_expected.to allow_value("https://foo.bar").for(:onAnswer) }
-        it { is_expected.to_not allow_value("foo").for(:onAnswer) }
-        it { is_expected.to_not allow_value("ftp://foo.bar").for(:onAnswer) }
-        it { is_expected.to_not allow_blank_values.for(:onAnswer) }
+        context "when the endpoint type is set to phone" do
+          specify do
+            expect(schema).to_not require_attribute(:onAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to allow_value("http://foo.bar").for(:onAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to allow_value("https://foo.bar").for(:onAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("foo").for(:onAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("ftp://foo.bar").for(:onAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.for(:onAnswer).
+              with_attributes(type: "phone")
+          end
+        end
+
+        context "when the endpoint type is set to something else" do
+          specify do
+            expect(schema).to_not allow_attribute(:onAnswer).with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_attribute(:onAnswer).
+              with_attributes(type: "websocket")
+          end
+        end
       end
 
       describe "dtmfAnswer" do
-        it { is_expected.to_not require_attribute(:dtmfAnswer) }
-        it { is_expected.to allow_value("123*456#").for(:dtmfAnswer) }
-        it { is_expected.to allow_value("1").for(:dtmfAnswer) }
-        it { is_expected.to_not allow_value(1).for(:dtmfAnswer) }
-        it { is_expected.to_not allow_value("1234ab").for(:dtmfAnswer) }
-        it { is_expected.to_not allow_blank_values.for(:dtmfAnswer) }
+        context "when the endpoint type is set to phone" do
+          specify do
+            expect(schema).to_not require_attribute(:dtmfAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to allow_value("123*456#").for(:dtmfAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to allow_value("1").for(:dtmfAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_value(1).for(:dtmfAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("1234ab").for(:dtmfAnswer).
+              with_attributes(type: "phone")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.for(:dtmfAnswer).
+              with_attributes(type: "phone")
+          end
+        end
+
+        context "when the endpoint type is set to something else" do
+          specify do
+            expect(schema).to_not allow_attribute(:dtmfAnswer).
+              with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_attribute(:dtmfAnswer).
+              with_attributes(type: "websocket")
+          end
+        end
       end
 
       describe "uri" do
-        it { is_expected.to_not require_attribute(:uri) }
-        it { is_expected.to allow_value("ws://foo.bar").for(:uri) }
-        it { is_expected.to_not allow_value("foo").for(:uri) }
-        it { is_expected.to_not allow_value("http://foo.bar").for(:uri) }
-        it { is_expected.to_not allow_blank_values.for(:uri) }
+        context "when the endpoint type is set to websocket" do
+          specify do
+            expect(schema).to require_attribute(:uri).with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to allow_value("ws://foo.bar").for(:uri).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("foo").for(:uri).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("http://foo.bar").for(:uri).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.for(:uri).
+              with_attributes(type: "websocket")
+          end
+        end
+
+        context "when the endpoint type is set to sip" do
+          specify do
+            expect(schema).to require_attribute(:uri).with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to allow_value("sip:123@sip.example.com").
+              for(:uri).with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("foo").for(:uri).
+              with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("http://foo.bar").
+              for(:uri).with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.
+              for(:uri).with_attributes(type: "sip")
+          end
+        end
+
+        context "when the endpoint type is set to phone" do
+          specify do
+            expect(schema).to_not allow_attribute(:uri).with_attributes(type: "phone")
+          end
+        end
       end
 
       describe "content-type" do
-        it { is_expected.to_not require_attribute("content-type") }
-        it { is_expected.to allow_value("audio/l16;rate=16000").for("content-type") }
-        it { is_expected.to_not allow_value("something else").for("content-type") }
-        it { is_expected.to_not allow_blank_values.for("content-type") }
+        context "when the endpoint type is set to websocket" do
+          specify do
+            expect(schema).to_not require_attribute("content-type").
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to allow_value("audio/l16;rate=16000").
+              for("content-type").with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("something else").for("content-type").
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.for("content-type").
+              with_attributes(type: "websocket")
+          end
+        end
+
+        context "when the endpoint type is set to something else" do
+          specify do
+            expect(schema).to_not allow_attribute("content-type").
+              with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_attribute("content-type").
+              with_attributes(type: "phone")
+          end
+        end
       end
 
       describe "headers" do
-        it { is_expected.to_not require_attribute(:headers) }
-        it { is_expected.to allow_value("foo" => "bar").for(:headers) }
-        it { is_expected.to allow_value("foo" => "bar", "bang" => "baz").for(:headers) }
-        it { is_expected.to_not allow_value(foo: "bar").for(:headers) }
-        it { is_expected.to_not allow_value(%w[foo bar]).for(:headers) }
-        it { is_expected.to_not allow_value("foo: bar").for(:headers) }
-        it { is_expected.to_not allow_blank_values.for(:headers) }
+        context "when the endpoint type is set to websocket" do
+          specify do
+            expect(schema).to_not require_attribute(:headers).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to allow_value("foo" => "bar").for(:headers).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to allow_value("foo" => "bar", "bang" => "baz").for(:headers).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_value(foo: "bar").for(:headers).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_value(%w[foo bar]).for(:headers).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_value("foo: bar").for(:headers).
+              with_attributes(type: "websocket")
+          end
+
+          specify do
+            expect(schema).to_not allow_blank_values.for(:headers).
+              with_attributes(type: "websocket")
+          end
+        end
+
+        context "when the endpoint type is set to something else" do
+          specify do
+            expect(schema).to_not allow_attribute(:headers).with_attributes(type: "sip")
+          end
+
+          specify do
+            expect(schema).to_not allow_attribute(:headers).
+              with_attributes(type: "phone")
+          end
+        end
       end
 
       it { is_expected.to_not allow_attribute(:foo) }

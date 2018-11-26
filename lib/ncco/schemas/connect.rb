@@ -2,19 +2,53 @@
 
 module NCCO
   module Schemas
-    # TODO: Validate these attributes depending on the specified endpoint type
+    ConnectPhoneEndpoint = Dry::Validation.Schema(BaseSchema) do
+      required(:type).value(eql?: "phone")
+
+      required(:number).value(:e164?)
+      optional(:onAnswer).value(:http_or_https_url?)
+      optional(:dtmfAnswer).value(:phone_keypad_digits?)
+    end
+
+    ConnectSipEndpoint = Dry::Validation.Schema(BaseSchema) do
+      required(:type).value(eql?: "sip")
+
+      required(:uri).value(:sip_uri?)
+    end
+
+    ConnectWebSocketEndpoint = Dry::Validation.Schema(BaseSchema) do
+      required(:type).value(eql?: "websocket")
+
+      required(:uri).value(:websocket_url?)
+      optional("content-type").value(eql?: "audio/l16;rate=16000")
+      optional(:headers).value(:hash_with_string_keys_and_values?)
+    end
+
     ConnectEndpoint = Dry::Validation.Schema(BaseSchema) do
       required(:type).value(included_in?: %w[phone websocket sip])
 
-      # Phone endpoint attributes
-      optional(:number).value(:e164?)
-      optional(:onAnswer).value(:http_or_https_url?)
-      optional(:dtmfAnswer).value(:phone_keypad_digits?)
+      # How we validate the endpoint (i.e. what schema we should use) depends on the type
+      rule(phone_endpoint: [:type]) do |type|
+        type.eql?("phone") > schema(ConnectPhoneEndpoint)
+      end
 
-      # WebSocket endpoint attributes
-      optional(:uri).value(:websocket_url?) # Also used for SIP endpoints
-      optional("content-type").value(eql?: "audio/l16;rate=16000")
-      optional(:headers).value(:hash_with_string_keys_and_values?)
+      rule(sip_endpoint: [:type]) do |type|
+        type.eql?("sip") > schema(ConnectSipEndpoint)
+      end
+
+      rule(websocket_endpoint: [:type]) do |type|
+        type.eql?("websocket") > schema(ConnectWebSocketEndpoint)
+      end
+
+      # We use this special `anything?` predicate to declare and whitelist the
+      # attribute without setting any rules for they must look like. The values
+      # are validated by our endpoint-specific schemas.
+      optional(:number).value(:anything?)
+      optional(:onAnswer).value(:anything?)
+      optional(:dtmfAnswer).value(:anything?)
+      optional(:uri).value(:anything?)
+      optional("content-type").value(:anything?)
+      optional(:headers).value(:anything?)
     end
 
     Connect = Dry::Validation.Schema(BaseSchema) do

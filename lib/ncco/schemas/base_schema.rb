@@ -13,7 +13,11 @@ module NCCO
 
         # Used to validate that the input only includes keys that are defined in
         # the schema, implementing a slightly hacky "whitelisting" behaviour (which
-        # for some reason isn't include in `dry-validations`!)
+        # for some reason isn't included in `dry-validations`!).
+        #
+        # In some places, we have to hack around this a bit by using our special
+        # `:anything?` predicate to whitelist an attribute which we have no rules
+        # to define about.
         def strict_keys?(input)
           (input.keys - rules.keys).empty?
         end

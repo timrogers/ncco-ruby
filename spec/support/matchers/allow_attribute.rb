@@ -3,11 +3,19 @@
 require "rspec/expectations"
 
 RSpec::Matchers.define :allow_attribute do |attribute_name|
+  attr_reader :other_attributes
+
   match do |schema|
-    error_messages = schema.call(attribute_name => "anything").
+    attributes = (other_attributes || {}).merge(attribute_name => "anything")
+
+    error_messages = schema.call(attributes).
       messages
 
     error_messages.nil?
+  end
+
+  chain :with_attributes do |attributes|
+    @other_attributes = attributes
   end
 
   failure_message do

@@ -7,4 +7,6 @@ en:
     phone_keypad_digits?: must be a series of one or more digits from a phone keypad, as a string
     e164?: must be a valid E.164-formatted phone number
     websocket_url?: must be a valid Websocket URL
+    sip_uri?: must be a valid SIP URI
     hash_with_string_keys_and_values?: must be a hash with String keys and values
+    anything?: can be anything

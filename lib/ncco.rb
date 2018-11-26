@@ -10,6 +10,7 @@ require "ncco/schemas/input"
 require "ncco/schemas/record"
 require "ncco/schemas/stream"
 require "ncco/schemas/talk"
+require "ncco/utils"
 
 module NCCO
   class InvalidActionError < StandardError; end
@@ -42,7 +43,7 @@ module NCCO
   #   invalid and why.
   def self.build(actions)
     actions.
-      map { |action| action.transform_keys(&:to_sym) }.
+      map { |action| Utils.deep_transform_keys_to_symbols(action) }.
       each_with_index { |action, index| validate_action!(action, index: index) }
 
     actions
@@ -65,9 +66,9 @@ module NCCO
       end
 
       result = schema.call(action)
-      error_messages = get_error_messages(result)
+      error_message = get_error_message_from_result(result)
 
-      raise_invalid_error(error_messages.join(", "), index: index) if error_messages.any?
+      raise_invalid_error(error_message, index: index) if error_message
     end
 
     # Raises an InvalidActionError, featuring the human-readable index of the action
@@ -78,7 +79,7 @@ module NCCO
     #   object
     # @raise [InvalidActionError]
     def raise_invalid_error(error_message, index:)
-      raise InvalidActionError, "The #{ordinalized_number(index + 1)} action is " \
+      raise InvalidActionError, "The #{ordinalised_number(index + 1)} action is " \
                                 "invalid: #{error_message}"
     end
 
@@ -89,8 +90,8 @@ module NCCO
     # @param number [Integer] the number to fetch the ordinal string for
     # @return [String] the number, followed by the ordinal string corresponding to the
     #   number
-    def ordinalized_number(number)
-      "#{number}#{ordinalize(number)}"
+    def ordinalised_number(number)
+      "#{number}#{ordinal_string_for_number(number)}"
     end
 
     # Turns a number into an "ordinal string" used to denote its position in an ordered
@@ -98,7 +99,7 @@ module NCCO
     #
     # @param number [Integer] the number to fetch the ordinal string for
     # @return [String] the ordinal string corresponding to the number
-    def ordinalize(number)
+    def ordinal_string_for_number(number)
       case number.digits.last
       when 0 then "th"
       when 1 then "st"
@@ -108,19 +109,26 @@ module NCCO
       end
     end
 
-    # Gets the error messages from `Dry::Validation::Result`s in a consistent format. For
-    # field-level errors, we get back a `Hash` mapping the attribute name to an array of
-    # `String` error messages, whereas for unrecognised attributes (which is a bit of a
-    # hack), we just get back an array. This handles either gracefully.
+    # Gets the error messages from a `Dry::Validation::Result`, if there is one, dealing
+    # with the slightly mad `Result` API
     #
-    # @param result [Dry::Valiation::Result] the result from validating an action against
+    # @param result [Dry::Validation::Result] the result from validating an action against
     #   a schema
-    # @return [Array<String>] a list of error messages which is guaranteed to be an array
-    def get_error_messages(result)
+    # @return [String, nil] an error message to display, if there was an error
+    def get_error_message_from_result(result)
       error_messages = result.messages(full: true)
-      return error_messages if error_messages.is_a?(Array)
+      return if error_messages.none?
 
-      error_messages.values.flatten
+      transform_error_message(error_messages)
+    end
+
+    def transform_error_message(error_messages)
+      case error_messages
+      when String then errror_messages
+      when Array then error_messages.first
+      when Hash then transform_error_message(error_messages.values.first)
+      else raise ArgumentError, "Unable to parse error message"
+      end
     end
   end
 end

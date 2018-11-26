@@ -19,6 +19,12 @@ module NCCO
       false
     end
 
+    SIP_URI_REGEX = /\Asip:/i.freeze
+
+    predicate(:sip_uri?) do |value|
+      value =~ SIP_URI_REGEX
+    end
+
     # TODO: Check what HTTP methods are supported by Nexmo - presumably not the full set?
     # <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>
     predicate(:supported_http_method?) do |value|
@@ -48,6 +54,10 @@ module NCCO
       value.is_a?(Hash) &&
         value.keys.map(&:class).uniq == [String] &&
         value.values.map(&:class).uniq == [String]
+    end
+
+    predicate(:anything?) do |_|
+      true
     end
   end
 end

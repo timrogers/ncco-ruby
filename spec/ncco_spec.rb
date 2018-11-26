@@ -9,12 +9,18 @@ RSpec.describe NCCO do
 
       it { is_expected.to eq(input) }
 
-      describe "with symbol keys" do
+      context "with symbol keys" do
         let(:input) do
           load_json_fixture("valid_ncco.json").map do |action|
             deep_transform_keys(action, &:to_sym)
           end
         end
+
+        it { is_expected.to eq(input) }
+      end
+
+      context "with a 'connect' action (which contains a nested object)" do
+        let(:input) { load_json_fixture("valid_ncco_with_connect_action.json") }
 
         it { is_expected.to eq(input) }
       end
@@ -39,7 +45,7 @@ RSpec.describe NCCO do
           it "raises an error" do
             expect { build }.to raise_error(
               NCCO::InvalidActionError,
-              "The 1st action is invalid: text is missing, text must be String",
+              "The 1st action is invalid: text is missing",
             )
           end
         end
@@ -53,6 +59,39 @@ RSpec.describe NCCO do
               "The 2nd action is invalid: eventUrl must be a valid HTTP or " \
               "HTTPS URL",
             )
+          end
+
+          context "with a 'connect' action (which contains a nested object)" do
+            context "with an additional unrecognised attribute" do
+              let(:input) do
+                load_json_fixture(
+                  "invalid_ncco_with_invalid_connect_action_endpoint.json",
+                )
+              end
+
+              it "raises an error" do
+                expect { build }.to raise_error(
+                  NCCO::InvalidActionError,
+                  "The 1st action is invalid: endpoint has attributes which aren't " \
+                  "part of the NCCO specification",
+                )
+              end
+            end
+
+            context "with an invalid attribute" do
+              let(:input) do
+                load_json_fixture("invalid_ncco_with_invalid_connect_action_endpoint_" \
+                                  "attribute.json")
+              end
+
+              it "raises an error" do
+                expect { build }.to raise_error(
+                  NCCO::InvalidActionError,
+                  "The 1st action is invalid: number must be a valid E.164-formatted " \
+                  "phone number",
+                )
+              end
+            end
           end
         end
 

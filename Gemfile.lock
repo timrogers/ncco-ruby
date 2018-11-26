@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ncco (0.1.1)
+    ncco (0.2.0)
       dry-validation (~> 0.12.2)
 
 GEM
@@ -92,4 +92,4 @@ DEPENDENCIES
   rubocop-rspec (~> 1.30.1)
 
 BUNDLED WITH
-   1.17.0.pre.2
+   1.17.1
