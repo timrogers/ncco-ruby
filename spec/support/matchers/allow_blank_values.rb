@@ -3,7 +3,7 @@
 require "rspec/expectations"
 
 RSpec::Matchers.define :allow_blank_values do
-  attr_reader :attribute_name
+  attr_reader :attribute_name, :other_attributes
 
   match do |schema|
     unless attribute_name
@@ -12,10 +12,14 @@ RSpec::Matchers.define :allow_blank_values do
             "`it { is_expected.to_not allow_blank_values.for(:text) }`")
     end
 
-    error_messages_with_blank = schema.call(attribute_name => "").
+    attributes = other_attributes || {}
+
+    error_messages_with_blank = schema.
+      call(attributes.merge(attribute_name => "")).
       messages[attribute_name]
 
-    error_messages_with_nil = schema.call(attribute_name => nil).
+    error_messages_with_nil = schema.
+      call(attributes.merge(attribute_name => nil)).
       messages[attribute_name]
 
     error_messages_with_blank.nil? && error_messages_with_nil.nil?
@@ -23,6 +27,10 @@ RSpec::Matchers.define :allow_blank_values do
 
   chain :for do |attribute_name|
     @attribute_name = attribute_name
+  end
+
+  chain :with_attributes do |attributes|
+    @other_attributes = attributes
   end
 
   failure_message do

@@ -77,7 +77,7 @@ RSpec.describe NCCO::Predicates do
     end
   end
 
-  describe "http_or_https_url?" do
+  describe "websocket_url?" do
     let(:predicate) { :websocket_url? }
 
     context "with an Websocket URL" do
@@ -94,6 +94,46 @@ RSpec.describe NCCO::Predicates do
 
     context "with an HTTPS URL" do
       let(:input) { "https://timrogers.co.uk" }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "with an invalid URL" do
+      let(:input) { "foo" }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "with nil" do
+      let(:input) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "with an empty string" do
+      let(:input) { "" }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe "sip_uri?" do
+    let(:predicate) { :sip_uri? }
+
+    context "with something starting with 'sip:'" do
+      let(:input) { "sip:rebekka@sip.example.com" }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "with an HTTPS URL" do
+      let(:input) { "https://timrogers.co.uk" }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "with a URL that isn't HTTP or HTTPS" do
+      let(:input) { "ws://timrogers.co.uk" }
 
       it { is_expected.to be_falsey }
     end
@@ -309,5 +349,13 @@ RSpec.describe NCCO::Predicates do
 
       it { is_expected.to be_falsey }
     end
+  end
+
+  describe "anything?" do
+    let(:predicate) { :anything? }
+
+    let(:input) { :whatever_you_like }
+
+    it { is_expected.to be_truthy }
   end
 end

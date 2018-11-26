@@ -7,7 +7,7 @@ require "rspec/expectations"
 # makes that easy and simple, without having to understand what's going on under the
 # hood.
 RSpec::Matchers.define :allow_value do |value|
-  attr_reader :attribute_name, :error_messages
+  attr_reader :attribute_name, :other_attributes, :error_messages
 
   match do |schema|
     unless attribute_name
@@ -15,7 +15,9 @@ RSpec::Matchers.define :allow_value do |value|
             "for example: `it { is_expected.to allow_value(\"Hello!\").for(:text) }`")
     end
 
-    @error_messages = schema.call(attribute_name => value).
+    attributes = (other_attributes || {}).merge(attribute_name => value)
+
+    @error_messages = schema.call(attributes).
       messages[attribute_name]
 
     error_messages.nil?
@@ -23,6 +25,10 @@ RSpec::Matchers.define :allow_value do |value|
 
   chain :for do |attribute_name|
     @attribute_name = attribute_name
+  end
+
+  chain :with_attributes do |attributes|
+    @other_attributes = attributes
   end
 
   failure_message do

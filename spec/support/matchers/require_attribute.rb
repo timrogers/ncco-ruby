@@ -12,11 +12,17 @@ require "rspec/expectations"
 # This handy matcher checks that a key is required, without setting any
 # conditions about the value.
 RSpec::Matchers.define :require_attribute do |attribute_name|
+  attr_reader :other_attributes
+
   match do |schema|
-    error_messages = schema.call({}).
+    error_messages = schema.call(other_attributes || {}).
       messages[attribute_name]
 
     error_messages&.include?("is missing")
+  end
+
+  chain :with_attributes do |attributes|
+    @other_attributes = attributes
   end
 
   failure_message do
